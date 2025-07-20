@@ -64,6 +64,52 @@ app.get('/admin/applications', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin', 'applications.html'));
 });
 
+// Setup admin endpoint for Vercel
+app.get('/setup-admin', async (req, res) => {
+    try {
+        const User = require('./models/User');
+        const bcrypt = require('bcryptjs');
+        
+        // Check if admin already exists
+        const existingAdmin = await User.findOne({ email: process.env.ADMIN_EMAIL || 'admin@tamilcommittee.org' });
+        
+        if (existingAdmin) {
+            return res.json({
+                success: true,
+                message: 'Admin user already exists. You can login with your credentials.',
+                adminEmail: process.env.ADMIN_EMAIL || 'admin@tamilcommittee.org'
+            });
+        }
+        
+        // Create admin user
+        const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 10);
+        
+        const adminUser = new User({
+            email: process.env.ADMIN_EMAIL || 'admin@tamilcommittee.org',
+            password: hashedPassword,
+            role: 'admin',
+            isActive: true
+        });
+        
+        await adminUser.save();
+        
+        res.json({
+            success: true,
+            message: 'Admin user created successfully!',
+            adminEmail: process.env.ADMIN_EMAIL || 'admin@tamilcommittee.org',
+            note: 'Please change the default password after first login.'
+        });
+        
+    } catch (error) {
+        console.error('Setup admin error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error creating admin user',
+            error: error.message
+        });
+    }
+});
+
 // Serve the main frontend
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
