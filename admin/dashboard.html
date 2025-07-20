@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>நிர்வாக டாஷ்போர்டு - Tamil Education Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f6fa;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 0;
+        }
+
+        .nav-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            color: #764ba2;
+            border-bottom-color: #764ba2;
+            background: #f8f9fa;
+        }
+
+        .nav-tab:hover {
+            background: #f8f9fa;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 70vh;
+        }
+
+        .tab-pane {
+            display: none;
+            padding: 2rem;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-under-review {
+            background: #cce7ff;
+            color: #004085;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            margin: 0.25rem;
+        }
+
+        .btn-primary {
+            background: #764ba2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #667eea;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-controls select,
+        .filter-controls input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .pagination button:hover {
+            background: #f8f9fa;
+        }
+
+        .pagination button.active {
+            background: #764ba2;
+            color: white;
+            border-color: #764ba2;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .table {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>நிர்வாக டாஷ்போர்டு - Tamil Education Admin</h1>
+        <div class="user-info">
+            <span id="userWelcome">வணக்கம்</span>
+            <button class="logout-btn" onclick="logout()">வெளியேறு</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('dashboard')">டாஷ்போர்டு</button>
+            <button class="nav-tab" onclick="showTab('applications')">விண்ணப்பங்கள்</button>
+            <button class="nav-tab" onclick="showTab('analytics')">அறிக்கைகள்</button>
+        </div>
+
+        <div class="tab-content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-pane active">
+                <div id="dashboardLoading" class="loading">தகவல்களை ஏற்றுகிறது...</div>
+                <div id="dashboardContent" style="display: none;">
+                    <div class="stats-grid" id="statsGrid">
+                        <!-- Stats will be loaded here -->
+                    </div>
+                    
+                    <h3>சமீபத்திய விண்ணப்பங்கள்</h3>
+                    <div id="recentApplications">
+                        <!-- Recent applications will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applications Tab -->
+            <div id="applications" class="tab-pane">
+                <div class="filter-controls">
+                    <select id="statusFilter" onchange="loadApplications()">
+                        <option value="all">அனைத்து நிலைகள்</option>
+                        <option value="pending">நிலுவையில்</option>
+                        <option value="approved">அங்கீகரிக்கப்பட்டது</option>
+                        <option value="rejected">நிராகரிக்கப்பட்டது</option>
+                        <option value="under_review">மதிப்பாய்வில்</option>
+                    </select>
+                    
+                    <input type="text" id="searchInput" placeholder="தேடல்..." onchange="loadApplications()">
+                    
+                    <button class="btn btn-primary" onclick="exportApplications()">ஏற்றுமதி</button>
+                </div>
+
+                <div id="applicationsLoading" class="loading">விண்ணப்பங்களை ஏற்றுகிறது...</div>
+                <div id="applicationsContent" style="display: none;">
+                    <table class="table" id="applicationsTable">
+                        <thead>
+                            <tr>
+                                <th>பெயர்</th>
+                                <th>மின்னஞ்சல்</th>
+                                <th>தொலைபேசி</th>
+                                <th>நகரம்</th>
+                                <th>தகுதி</th>
+                                <th>நிலை</th>
+                                <th>தேதி</th>
+                                <th>செயல்கள்</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicationsTableBody">
+                            <!-- Applications will be loaded here -->
+                        </tbody>
+                    </table>
+                    
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics" class="tab-pane">
+                <div id="analyticsLoading" class="loading">அறிக்கைகளை ஏற்றுகிறது...</div>
+                <div id="analyticsContent" style="display: none;">
+                    <h3>மாதவாரி புள்ளிவிவரங்கள்</h3>
+                    <div id="monthlyChart" style="margin: 2rem 0;">
+                        <!-- Chart will be rendered here -->
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 2rem 0;">
+                        <div>
+                            <h4>கல்வி தகுதி பகிர்வு</h4>
+                            <div id="qualificationChart"></div>
+                        </div>
+                        <div>
+                            <h4>வயது குழு பகிர்வு</h4>
+                            <div id="ageChart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Details Modal -->
+    <div id="applicationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 10px; max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3>விண்ணப்ப விவரங்கள்</h3>
+                <button onclick="closeModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="applicationDetails">
+                <!-- Application details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentPage = 1;
+        let currentFilter = 'all';
+        let currentSearch = '';
+
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        async function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            const user = JSON.parse(localStorage.getItem('adminUser') || '{}');
+
+            if (!token) {
+                window.location.href = '/admin';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    document.getElementById('userWelcome').textContent = `வணக்கம், ${data.user.name}`;
+                    loadDashboard();
+                } else {
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminUser');
+                    window.location.href = '/admin';
+                }
+
+            } catch (error) {
+                console.error('Auth check error:', error);
+                window.location.href = '/admin';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = '/admin';
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Remove active class from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Load data for the selected tab
+            if (tabName === 'dashboard') {
+                loadDashboard();
+            } else if (tabName === 'applications') {
+                loadApplications();
+            } else if (tabName === 'analytics') {
+                loadAnalytics();
+            }
+        }
+
+        async function loadDashboard() {
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch('/api/dashboard/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayDashboardStats(data.stats);
+                    document.getElementById('dashboardLoading').style.display = 'none';
+                    document.getElementById('dashboardContent').style.display = 'block';
+                } else {
+                    throw new Error(data.message);
+                }
+
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+                document.getElementById('dashboardLoading').innerHTML = '<div class="error">டாஷ்போர்டு ஏற்றுவதில் பிழை</div>';
+            }
+        }
+
+        function displayDashboardStats(stats) {
+            const statsGrid = document.getElementById('statsGrid');
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <h3>${stats.overview.totalApplications}</h3>
+                    <p>மொத்த விண்ணப்பங்கள்</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${stats.overview.pendingApplications}</h3>
+                    <p>நிலுவையில்</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${stats.overview.approvedApplications}</h3>
+                    <p>அங்கீகரிக்கப்பட்டது</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${stats.overview.approvalRate}%</h3>
+                    <p>அங்கீகார விகிதம்</p>
+                </div>
+            `;
+
+            // Display recent applications
+            const recentApplications = document.getElementById('recentApplications');
+            recentApplications.innerHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>பெயர்</th>
+                            <th>மின்னஞ்சல்</th>
+                            <th>நிலை</th>
+                            <th>தேதி</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${stats.recentApplications.map(app => `
+                            <tr>
+                                <td>${app.firstName} ${app.lastName}</td>
+                                <td>${app.email}</td>
+                                <td><span class="badge badge-${app.status}">${getStatusTamil(app.status)}</span></td>
+                                <td>${new Date(app.submittedAt).toLocaleDateString('ta-IN')}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        async function loadApplications() {
+            document.getElementById('applicationsLoading').style.display = 'block';
+            document.getElementById('applicationsContent').style.display = 'none';
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                const status = document.getElementById('statusFilter').value;
+                const search = document.getElementById('searchInput').value;
+
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    limit: 10,
+                    status: status,
+                    search: search
+                });
+
+                const response = await fetch(`/api/admin/applications?${params}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayApplications(data.applications, data.pagination);
+                    document.getElementById('applicationsLoading').style.display = 'none';
+                    document.getElementById('applicationsContent').style.display = 'block';
+                } else {
+                    throw new Error(data.message);
+                }
+
+            } catch (error) {
+                console.error('Applications load error:', error);
+                document.getElementById('applicationsLoading').innerHTML = '<div class="error">விண்ணப்பங்களை ஏற்றுவதில் பிழை</div>';
+            }
+        }
+
+        function displayApplications(applications, pagination) {
+            const tbody = document.getElementById('applicationsTableBody');
+            
+            tbody.innerHTML = applications.map(app => `
+                <tr>
+                    <td>${app.firstName} ${app.lastName}</td>
+                    <td>${app.email}</td>
+                    <td>${app.phone}</td>
+                    <td>${app.city}</td>
+                    <td>${getQualificationTamil(app.qualification)}</td>
+                    <td><span class="badge badge-${app.status}">${getStatusTamil(app.status)}</span></td>
+                    <td>${new Date(app.submittedAt).toLocaleDateString('ta-IN')}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="viewApplication('${app._id}')">பார்க்க</button>
+                        ${app.status === 'pending' ? `
+                            <button class="btn btn-success" onclick="updateStatus('${app._id}', 'approved')">அங்கீகரி</button>
+                            <button class="btn btn-danger" onclick="updateStatus('${app._id}', 'rejected')">நிராகரி</button>
+                            <button class="btn btn-warning" onclick="updateStatus('${app._id}', 'under_review')">மதிப்பாய்வு</button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+
+            // Display pagination
+            displayPagination(pagination);
+        }
+
+        function displayPagination(pagination) {
+            const paginationDiv = document.getElementById('pagination');
+            
+            let paginationHtml = '';
+            
+            // Previous button
+            paginationHtml += `<button ${!pagination.hasPrev ? 'disabled' : ''} onclick="changePage(${pagination.current - 1})">முந்தைய</button>`;
+            
+            // Page numbers
+            for (let i = Math.max(1, pagination.current - 2); i <= Math.min(pagination.pages, pagination.current + 2); i++) {
+                paginationHtml += `<button class="${i === pagination.current ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            
+            // Next button
+            paginationHtml += `<button ${!pagination.hasNext ? 'disabled' : ''} onclick="changePage(${pagination.current + 1})">அடுத்த</button>`;
+            
+            paginationDiv.innerHTML = paginationHtml;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            loadApplications();
+        }
+
+        async function viewApplication(id) {
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(`/api/admin/applications/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayApplicationDetails(data.application);
+                    document.getElementById('applicationModal').style.display = 'block';
+                } else {
+                    alert('விண்ணப்பத்தை ஏற்றுவதில் பிழை');
+                }
+
+            } catch (error) {
+                console.error('View application error:', error);
+                alert('விண்ணப்பத்தை ஏற்றுவதில் பிழை');
+            }
+        }
+
+        function displayApplicationDetails(app) {
+            document.getElementById('applicationDetails').innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div><strong>பெயர்:</strong> ${app.firstName} ${app.lastName}</div>
+                    <div><strong>மின்னஞ்சல்:</strong> ${app.email}</div>
+                    <div><strong>தொலைபேசி:</strong> ${app.phone}</div>
+                    <div><strong>வயது:</strong> ${app.age}</div>
+                    <div><strong>நகரம்:</strong> ${app.city}</div>
+                    <div><strong>அஞ்சல் குறியீடு:</strong> ${app.postcode}</div>
+                    <div><strong>கல்வி தகுதி:</strong> ${getQualificationTamil(app.qualification)}</div>
+                    <div><strong>தொழில்:</strong> ${app.profession}</div>
+                    <div><strong>நிலை:</strong> <span class="badge badge-${app.status}">${getStatusTamil(app.status)}</span></div>
+                    <div><strong>விண்ணப்பிக்கப்பட்ட தேதி:</strong> ${new Date(app.submittedAt).toLocaleDateString('ta-IN')}</div>
+                </div>
+                
+                <div style="margin-top: 1rem;">
+                    <strong>முகவரி:</strong><br>
+                    ${app.address}
+                </div>
+                
+                ${app.experience ? `
+                    <div style="margin-top: 1rem;">
+                        <strong>அனுபவம்:</strong><br>
+                        ${app.experience}
+                    </div>
+                ` : ''}
+                
+                ${app.contribution ? `
+                    <div style="margin-top: 1rem;">
+                        <strong>பங்களிப்பு:</strong><br>
+                        ${app.contribution}
+                    </div>
+                ` : ''}
+                
+                ${app.notes ? `
+                    <div style="margin-top: 1rem;">
+                        <strong>குறிப்புகள்:</strong><br>
+                        ${app.notes}
+                    </div>
+                ` : ''}
+                
+                ${app.reviewedBy ? `
+                    <div style="margin-top: 1rem;">
+                        <strong>மதிப்பாய்வு செய்தவர்:</strong> ${app.reviewedBy.name}<br>
+                        <strong>மதிப்பாய்வு தேதி:</strong> ${new Date(app.reviewedAt).toLocaleDateString('ta-IN')}
+                    </div>
+                ` : ''}
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    ${app.status === 'pending' ? `
+                        <button class="btn btn-success" onclick="updateStatusWithNotes('${app._id}', 'approved')">அங்கீகரி</button>
+                        <button class="btn btn-danger" onclick="updateStatusWithNotes('${app._id}', 'rejected')">நிராகரி</button>
+                        <button class="btn btn-warning" onclick="updateStatusWithNotes('${app._id}', 'under_review')">மதிப்பாய்வுக்கு அனுப்பு</button>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function closeModal() {
+            document.getElementById('applicationModal').style.display = 'none';
+        }
+
+        async function updateStatus(id, status) {
+            if (!confirm(`இந்த விண்ணப்பத்தின் நிலையை "${getStatusTamil(status)}" என மாற்ற விரும்புகிறீர்களா?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(`/api/admin/applications/${id}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('நிலை வெற்றிகரமாக மாற்றப்பட்டது');
+                    loadApplications();
+                    closeModal();
+                } else {
+                    alert(data.message || 'நிலை மாற்றுவதில் பிழை');
+                }
+
+            } catch (error) {
+                console.error('Update status error:', error);
+                alert('நிலை மாற்றுவதில் பிழை');
+            }
+        }
+
+        async function updateStatusWithNotes(id, status) {
+            const notes = prompt('குறிப்புகள் (விருப்பம்):');
+            
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(`/api/admin/applications/${id}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status, notes })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('நிலை வெற்றிகரமாக மாற்றப்பட்டது');
+                    loadApplications();
+                    closeModal();
+                } else {
+                    alert(data.message || 'நிலை மாற்றுவதில் பிழை');
+                }
+
+            } catch (error) {
+                console.error('Update status error:', error);
+                alert('நிலை மாற்றுவதில் பிழை');
+            }
+        }
+
+        async function exportApplications() {
+            try {
+                const token = localStorage.getItem('adminToken');
+                const status = document.getElementById('statusFilter').value;
+                
+                const params = new URLSearchParams({
+                    format: 'csv',
+                    status: status
+                });
+
+                const response = await fetch(`/api/dashboard/exports/applications?${params}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `applications_${new Date().toISOString().split('T')[0]}.csv`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    alert('ஏற்றுமதியில் பிழை');
+                }
+
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('ஏற்றுமதியில் பிழை');
+            }
+        }
+
+        async function loadAnalytics() {
+            document.getElementById('analyticsLoading').style.display = 'block';
+            document.getElementById('analyticsContent').style.display = 'none';
+
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch('/api/dashboard/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayAnalytics(data.stats);
+                    document.getElementById('analyticsLoading').style.display = 'none';
+                    document.getElementById('analyticsContent').style.display = 'block';
+                } else {
+                    throw new Error(data.message);
+                }
+
+            } catch (error) {
+                console.error('Analytics load error:', error);
+                document.getElementById('analyticsLoading').innerHTML = '<div class="error">அறிக்கைகளை ஏற்றுவதில் பிழை</div>';
+            }
+        }
+
+        function displayAnalytics(stats) {
+            // Display monthly stats
+            const monthlyChart = document.getElementById('monthlyChart');
+            monthlyChart.innerHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>மாதம்</th>
+                            <th>மொத்தம்</th>
+                            <th>அங்கீகரிக்கப்பட்டது</th>
+                            <th>நிராகரிக்கப்பட்டது</th>
+                            <th>நிலுவையில்</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${stats.monthlyStats.map(month => `
+                            <tr>
+                                <td>${getMonthName(month._id)}</td>
+                                <td>${month.count}</td>
+                                <td>${month.approved}</td>
+                                <td>${month.rejected}</td>
+                                <td>${month.pending}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            // Display qualification stats
+            const qualificationChart = document.getElementById('qualificationChart');
+            qualificationChart.innerHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>கல்வி தகுதி</th>
+                            <th>எண்ணிக்கை</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${stats.qualificationStats.map(qual => `
+                            <tr>
+                                <td>${getQualificationTamil(qual._id)}</td>
+                                <td>${qual.count}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            // Display age stats
+            const ageChart = document.getElementById('ageChart');
+            ageChart.innerHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>வயது குழு</th>
+                            <th>எண்ணிக்கை</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${stats.ageStats.map(age => `
+                            <tr>
+                                <td>${age._id}</td>
+                                <td>${age.count}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Helper functions
+        function getStatusTamil(status) {
+            const statusMap = {
+                'pending': 'நிலுவையில்',
+                'approved': 'அங்கீகரிக்கப்பட்டது',
+                'rejected': 'நிராகரிக்கப்பட்டது',
+                'under_review': 'மதிப்பாய்வில்'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getQualificationTamil(qualification) {
+            const qualificationMap = {
+                'undergraduate': 'பட்டப்படிப்பு',
+                'postgraduate': 'முதுகலை',
+                'doctoral': 'மருத்துவர் பட்டம்',
+                'teacher': 'ஆசிரியர்',
+                'retired_teacher': 'ஓய்வுபெற்ற ஆசிரியர்',
+                'other': 'பிற'
+            };
+            return qualificationMap[qualification] || qualification;
+        }
+
+        function getMonthName(month) {
+            const monthNames = [
+                'ஜனவரி', 'பிப்ரவரி', 'மார்ச்', 'ஏப்ரல்', 'மே', 'ஜூன்',
+                'ஜூலை', 'ஆகஸ்ட்', 'செப்டம்பர்', 'அக்டோபர்', 'நவம்பர்', 'டிசம்பர்'
+            ];
+            return monthNames[month - 1] || month;
+        }
+    </script>
+</body>
+</html>

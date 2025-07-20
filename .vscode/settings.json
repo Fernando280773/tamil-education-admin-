@@ -1,0 +1,20 @@
+{
+  "mcp.enabled": true,
+  "mcp.servers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    }
+  },
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "scminput": false
+  },
+  "github.copilot.advanced": {
+    "debug.overrideEngine": "copilot-codex",
+    "debug.testOverrideProxyUrl": "https://api.githubcopilot.com",
+    "debug.overrideProxyUrl": "https://api.githubcopilot.com"
+  }
+}

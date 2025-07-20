@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "node",
+      "args": ["./node_modules/@modelcontextprotocol/server-filesystem/dist/index.js"],
+      "env": {
+        "ALLOWED_DIRECTORIES": "/Users/waltonfernando/Documents/Education Team"
+      }
+    }
+  },
+  "servers": {
+    "github-copilot": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Content-Type": "application/json",
+        "User-Agent": "VS-Code-MCP-Client"
+      }
+    }
+  },
+  "github": {
+    "repository": "tamil-education-app",
+    "owner": "your-github-username",
+    "branch": "main"
+  }
+}
